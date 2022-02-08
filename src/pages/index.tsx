@@ -1,12 +1,38 @@
 import type { NextPage } from 'next'
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import { FormEvent, useState } from 'react';
+import { SearchResults } from '../components/SearchResults';
 
 const Home: NextPage = () => {
+  const [search, setSearch] = useState('');
+  const [results, setResults] = useState([]);
+
+  const handleSearch = async (event: FormEvent) => {
+    event.preventDefault()
+
+    if (!search.trim()) {
+      return
+    }
+
+    const response = await fetch(`http://localhost:3333/products?q=${search}`)
+    const data = await response.json()
+
+    setResults(data)
+  }
+
   return (
-    <div className={styles.container}>
-      Hello World
+    <div>
+      <h1>Search</h1>
+
+      <form onSubmit={handleSearch}>
+        <input
+          type="text"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+        />
+        <button type="submit">Buscar</button>
+      </form>
+
+      <SearchResults results={results} />
     </div>
   )
 }
